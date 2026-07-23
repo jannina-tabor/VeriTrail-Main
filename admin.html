@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VeriTrail — Administrator Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand" style="cursor: pointer;" onclick="window.location.href='dashboard.html';" title="Click to go to Operational Workspace">
+            <svg viewBox="0 0 40 40" width="30" height="30">
+                <polygon points="8,22 22,4 34,4 22,26" fill="#94A684"/>
+                <polygon points="8,22 18,14 22,26 12,32" fill="#3F5A49"/>
+                <circle cx="14" cy="18" r="3.4" fill="none" stroke="#FBF7EF" stroke-width="2"/>
+                <circle cx="12" cy="26" r="2.6" fill="#C47A57"/>
+            </svg>
+            <div class="brand-text">
+                <div class="name"><span class="veri">Veri</span><span class="trail">Trail</span></div>
+                <div class="tag">The Verifiable Logistics Chain</div>
+            </div>
+            <button class="sidebar-close" onclick="event.stopPropagation(); closeSidebar();" aria-label="Close menu">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+        </div>
+
+        <div class="workspace" style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="workspace-label">Dashboard View</div>
+            <div style="display: flex; background: rgba(0,0,0,0.2); padding: 3px; border-radius: 8px; gap: 4px;">
+                <button id="btnSwitchAdmin" class="btn btn-sm active-mode" style="flex: 1; padding: 6px 8px; font-size: 11px; border: none; cursor: pointer; background: var(--sage); color: #fff;" onclick="switchDashboardMode('admin')">
+                Supervisor
+                </button>
+                <button id="btnSwitchIT" class="btn btn-sm" style="flex: 1; padding: 6px 8px; font-size: 11px; border: none; cursor: pointer; color: var(--muted); background: transparent;" onclick="switchDashboardMode('it')">
+                IT Admin
+                </button>
+            </div>
+            <button class="btn btn-outline btn-sm" style="width:100%; color:#CBD6C4; border-color:rgba(255,255,255,0.2); margin-top: 4px;" onclick="window.location.href='dashboard.html'">
+                ← Operational Workspace
+            </button>
+        </div>
+
+        <!-- ================= SUPERVISOR NAV ================= -->
+        <nav class="mainnav" id="nav-admin">
+            <div class="navgroup-label">Supervisor Dashboard</div>
+            <a data-view="a-home" class="active" onclick="showView(this,'a-home')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg>
+                Home
+            </a>
+            <a data-view="a-inventory" onclick="showView(this,'a-inventory')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+                Inventory
+            </a>
+            <a data-view="a-requests" onclick="showView(this,'a-requests')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Requests
+            </a>
+            <a data-view="a-classification" onclick="showView(this,'a-classification')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                Classification
+            </a>
+            <a data-view="a-suppliers" onclick="showView(this,'a-suppliers')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg>
+                Supply Registry
+            </a>
+            <a data-view="a-comms" onclick="showView(this,'a-comms')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v13H7l-3 3z"/></svg>
+                Chat Inbox
+                <span class="badge" id="adminUnreadBadge">1</span>
+            </a>
+            <a data-view="a-disputes" onclick="showView(this,'a-disputes')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+                Dispute Center
+                <span class="badge" id="adminDisputeBadge">2</span>
+            </a>
+        </nav>
+
+        <!-- ================= IT ADMINISTRATOR NAV ================= -->
+        <nav class="mainnav" id="nav-it" style="display: none;">
+            <div class="navgroup-label">IT Administrator Dashboard</div>
+            <a data-view="it-dashboard" onclick="showView(this,'it-dashboard')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                IT Overview
+            </a>
+            <a data-view="it-accounts" onclick="showView(this,'it-accounts')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Account Management
+            </a>
+            <a data-view="it-create-admin" onclick="showView(this,'it-create-admin')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                Provision Admin
+            </a>
+            <a data-view="it-audit" onclick="showView(this,'it-audit')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Audit Logs
+            </a>
+            <a data-view="it-syslogs" onclick="showView(this,'it-syslogs')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                System Logs
+            </a>
+            <a data-view="it-database" onclick="showView(this,'it-database')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                Database
+            </a>
+            <a data-view="it-support" onclick="showView(this,'it-support')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Support Center
+            </a>
+        </nav>
+
+        <div class="sidebar-divider"></div>
+
+        <nav class="mainnav" id="nav-shared" style="flex:0 0 auto;margin-top:0;">
+            <a data-view="a-settings" onclick="showView(this,'a-settings')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+                Account Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-foot">
+            <div class="avatar" id="sidebarAvatar">JD</div>
+            <div class="who">
+                <div class="n" id="sidebarUserName">Juan Dela Cruz</div>
+                <div class="r" id="roleLabel">Supervisor</div>
+            </div>
+            <button title="Toggle light / dark mode" onclick="toggleTheme()" id="themeBtn">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ============ MAIN CONTENT AREA ============ -->
+    <div class="content-col">
+        <main>
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" onclick="toggleSidebarDesktop()" aria-label="Toggle menu" style="display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 6px; cursor: pointer; color: var(--ink);">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                    </button>
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span style="font-size: 11px; color: var(--muted);" id="topbarBreadcrumb">Administrator / Home</span>
+                        </div>
+                        <h1 class="page-title" id="pageTitle" style="font-size: 22px; margin: 0;">Home</h1>
+                    </div>
+                </div>
+                <div class="top-actions">
+                    <div class="bell" id="notifBell" onclick="toggleNotifications(event)">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+                        <span class="dot" id="notifDot" style="display:none;">0</span>
+                        <div class="notif-panel" id="notifPanel" onclick="event.stopPropagation()">
+                            <div class="notif-panel-header">
+                                <span>Notifications</span>
+                                <button type="button" onclick="markAllNotificationsRead(event)">Mark all read</button>
+                            </div>
+                            <div class="notif-list" id="notifList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supervisor Home -->
+            <section class="view active" id="a-home">
+                <div class="card">
+                    <div class="section-title">Request Transaction Stats</div>
+                    <div id="adminPipelineStats"></div>
+                </div>
+
+                <div class="split">
+                    <div class="card" style="grid-column:1;">
+                        <div class="section-title">Monthly Requests Completed</div>
+                        <div class="vbar-chart" id="monthlyCompletedChart"></div>
+                    </div>
+                    <div></div>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="val">72</div><div class="lbl">Items</div><div class="sub">905 units available</div></div>
+                    <div class="stat-card"><div class="val">14</div><div class="lbl">Low Stocks</div><div class="sub">Time to Restock</div></div>
+                    <div class="stat-card"><div class="val">6</div><div class="lbl">Pending Approval</div><div class="sub">Approve / Hold / Reject</div></div>
+                    <div class="stat-card"><div class="val">36</div><div class="lbl">Open Requests</div><div class="sub">On Going Transactions</div></div>
+                    <div class="stat-card"><div class="val">21</div><div class="lbl">Requests Filled</div><div class="sub">Completed Requests</div></div>
+                </div>
+
+                <div class="card">
+                    <div class="section-title">Request Transaction History</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Request Transaction ID</th><th>Requester</th><th>Receiver</th><th>Date Created</th><th>Items</th><th>Status</th></tr></thead>
+                        <tbody id="adminHistoryBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="section-title">Low Stock Items</div>
+                    <div id="adminLowStockList"></div>
+                </div>
+            </section>
+
+            <!-- Inventory -->
+            <section class="view" id="a-inventory">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box" style="flex:1;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input id="adminInvSearch" placeholder="Search inventory items..." oninput="renderAdminInventory()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+                        </div>
+                        <select class="filter" id="adminInvCatFilter" onchange="renderAdminInventory()">
+                            <option value="">All Categories</option>
+                            <option>Electronics</option>
+                            <option>Home &amp; Living</option>
+                            <option>Apparel</option>
+                            <option>Sports</option>
+                            <option>Stationery</option>
+                            <option>Documents &amp; Records</option>
+                            <option>Tools &amp; Tool Kits</option>
+                        </select>
+                        <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCSVImport(event)">
+
+                        <button class="btn btn-sage btn-sm" onclick="openInventoryModal()">＋ Add Item</button>
+                        <button class="btn btn-outline btn-sm" onclick="document.getElementById('csvFileInput').click()">Import CSV</button>
+                        <button class="btn btn-outline btn-sm" onclick="exportInventoryToCSV()">Export CSV</button>         
+                    </div>
+
+                    <div class="section-title">Warehouse Inventory</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>SKU</th>
+                            <th>Supplier</th>
+                            <th>Stock Level</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="adminInvBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Requests -->
+            <section class="view" id="a-requests">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box" style="flex:1;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="adminReqSearch" placeholder="Search requests" oninput="renderAdminRequests()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;"></div>
+                        <select class="filter" id="adminReqStageFilter" onchange="renderAdminRequests()">
+                        <option value="">Stage: All</option>
+                        <option value="needs-approval">Needs Approval</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="on-hold">On Hold</option>
+                        <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="section-title">Request Management</div>
+                    <div class="section-hint">Every request submitted by a Requester appears here for Approve / Hold / Reject action.</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Request ID</th><th>Requester</th><th>Items</th><th>Date Created</th><th>Stage</th><th></th></tr></thead>
+                        <tbody id="adminRequestsBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Classification Dashboard -->
+            <section class="view" id="a-classification">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box" style="flex:1;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input id="classSearchInput" placeholder="Search classifications..." oninput="renderAdminClassificationView()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+                        </div>
+                        <button class="btn btn-sage btn-sm" onclick="openClassModal()">＋ Add Classification</button>
+                    </div>
+
+                    <div class="section-title">Inventory Classification</div>
+                    <div class="section-hint">Primary categories for grouping warehouse inventory and managing handling guidelines.</div>
+                    
+                    <div class="class-grid-scroll-wrap" style="max-height: calc(100vh - 280px); overflow-y: auto; padding-bottom: 40px; padding-right: 6px;">
+                    <div class="class-grid" id="adminClassGrid"></div>
+                    </div>
+                </div>
+
+                <!-- Floating Island Widget: Packaging Rules -->
+                <div id="packagingIsland" 
+                    class="packaging-island"
+                    onmouseenter="handleIslandHover(true)" 
+                    onmouseleave="handleIslandHover(false)">
+                
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 13.5px; color: var(--ink-soft); white-space: nowrap;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                <line x1="12" y1="22.08" x2="12" y2="12"/>
+                            </svg>
+                            Packaging Rules
+                        </div>
+                        <button class="btn btn-ghost btn-sm" id="toggleIslandBtn" style="padding: 3px 10px; font-size: 11px;" onclick="togglePackagingIsland()">Toggle</button>
+                    </div>
+                    
+                    <div id="packagingIslandContent" style="display: none; max-height: 220px; overflow-y: auto; flex-direction: column; gap: 8px; margin-top: 12px;"></div>
+                </div>
+            </section>
+
+            <!-- Supply Registry -->
+            <section class="view" id="a-suppliers">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box" style="flex:1;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input id="supplierSearch" placeholder="Search suppliers by company, contact person, email, or category..." oninput="renderAdminSuppliers()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+                        </div>
+                        <button class="btn btn-sage btn-sm" onclick="openSupplierModal()">＋ Add Supplier</button>
+                    </div>
+
+                    <div class="section-title">Supplier Registry</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Contact Person</th>
+                            <th>Contact Number</th>
+                            <th>Email</th>
+                            <th>Categories Supplied</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="adminSuppliersBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chat Inbox -->
+            <section class="view" id="a-comms">
+                <div class="split">
+                    <div class="card">
+                        <div class="section-title">Active Conversations</div>
+                        <div class="inbox-list" id="adminInboxList"></div>
+                    </div>
+                    <div class="card">
+                        <div class="chat-header-row">
+                            <div class="section-title" id="adminChatTitle" style="margin:0;flex:1;">Conversation</div>
+                        </div>
+                        <div id="adminChatThread" style="display:flex;flex-direction:column;gap:10px;font-size:13px;max-height:280px;overflow:auto;margin-bottom:14px;"></div>
+                        <div style="display:flex;gap:8px;">
+                            <input id="adminChatInput" placeholder="Type a message…" style="flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:999px;font-size:12px;" onkeydown="if(event.key==='Enter') sendMessage('admin')">
+                            <button class="btn btn-sage" onclick="sendMessage('admin')">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dispute Center -->
+            <section class="view" id="a-disputes">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input id="topbarSearch" placeholder="Search..." oninput="handleTopbarSearch(this.value)" style="border:none; outline:none; background:transparent; font:inherit; width:100%; color:inherit;">
+                        </div>
+                        <select class="filter" id="adminDisputeStatusFilter" onchange="renderAdminDisputes()">
+                            <option value="">Status: All</option>
+                            <option value="Open">Open</option>
+                            <option value="Resolved">Resolved</option>
+                        </select>
+                    </div>
+
+                    <div class="section-title">Dispute Tickets</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Dispute ID</th><th>Request ID</th><th>Raised By</th><th>Date</th><th>Status</th><th></th></tr></thead>
+                        <tbody id="adminDisputesBody"></tbody>
+                    </table>
+                    </div>
+                    <div id="adminDisputeDetail"></div>
+                </div>
+            </section>
+
+            <!-- Admin Account Settings View -->
+            <section class="view" id="a-settings">
+                <div class="card" style="max-width: 680px; margin: 0 auto;">
+                    <div class="section-title">Admin Profile & Settings</div>
+                    <div class="section-hint" style="margin-bottom: 20px;">Manage your administrator account details, security credentials, and preferences.</div>
+
+                    <form onsubmit="saveAdminSettings(event)" style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="display: flex; align-items: center; gap: 16px; padding-bottom: 16px; border-bottom: 1px dashed var(--line);">
+                            <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--sage); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px;" id="adminAvatarPreview">
+                                AD
+                            </div>
+                            <div>
+                                <div style="font-weight: 800; font-size: 15px;" id="adminDisplayHeaderName">System Administrator</div>
+                                <div style="font-size: 12px; color: var(--muted);" id="adminDisplayHeaderEmail">admin@veritrail.com</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="adminSettingName" class="vt-input" value="System Administrator">
+                        </div>
+
+                        <div>
+                            <label class="form-label">Email Address</label>
+                            <input type="email" id="adminSettingEmail" class="vt-input" value="admin@veritrail.com">
+                        </div>
+
+                        <div>
+                            <label class="form-label">System Role</label>
+                            <input type="text" class="vt-input" value="Super Administrator" disabled style="opacity: 0.7; cursor: not-allowed;">
+                        </div>
+
+                        <div style="border-top: 1px dashed var(--line); margin: 8px 0;"></div>
+
+                        <div class="section-title" style="font-size: 14px; margin: 0;">Change Password</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div>
+                                <label class="form-label">New Password</label>
+                                <input type="password" id="adminSettingNewPass" class="vt-input" placeholder="Leave blank to keep current">
+                            </div>
+                            <div>
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" id="adminSettingConfirmPass" class="vt-input" placeholder="Confirm new password">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px;">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="showView(null, 'a-home')">Cancel</button>
+                            <button type="submit" class="btn btn-sage btn-sm" style="min-width: 120px;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ================= IT ADMINISTRATOR VIEWS ================= -->
+
+            <!-- IT Overview -->
+            <section class="view" id="it-dashboard">
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="val">187</div><div class="lbl">Total Users</div></div>
+                    <div class="stat-card"><div class="val">56</div><div class="lbl">Admins</div></div>
+                    <div class="stat-card"><div class="val">21</div><div class="lbl">Pending Tickets</div></div>
+                    <div class="stat-card"><div class="val">156</div><div class="lbl">Active Users</div></div>
+                    <div class="stat-card"><div class="val">16</div><div class="lbl">Dispute Tickets</div></div>
+                    <div class="stat-card"><div class="val">4.3 GB</div><div class="lbl">Storage</div></div>
+                </div>
+                <div class="stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+                    <div class="status-pill"><span>Connected</span><span class="lbl">Database Status</span></div>
+                    <div class="status-pill"><span>Online</span><span class="lbl">System Status</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="section-title">Request Account History</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Account Request Number</th><th>Last Name</th><th>First Name</th><th>Date Requested</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>TRX-101</strong></td><td>Reyes</td><td>Martin</td><td>July 9, 2026</td><td><span class="pill approved">Approved</span></td></tr>
+                            <tr><td><strong>TRX-685</strong></td><td>Cabrera</td><td>Joaquin</td><td>July 1, 2026</td><td><span class="pill pending">Pending</span></td></tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="section-title">Annual Active User Count</div>
+                    <div class="vbar-chart" id="annualUserChart" style="display:flex; align-items:flex-end; gap:16px; height:180px; padding-top:20px;"></div>
+                </div>
+
+                <div class="split">
+                    <div class="card">
+                        <div class="section-title">User Role Distribution</div>
+                        <div class="pie-wrap" style="display:flex; align-items:center; gap:20px; padding:12px 0;">
+                            <div class="pie" id="roleDistPie"></div>
+                            <div class="pie-legend" id="roleDistLegend" style="flex:1;"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="section-title">Daily Log In</div>
+                        <div class="trend-row" id="dailyLoginTrend" style="display:flex; align-items:flex-end; gap:12px; height:140px; padding-top:16px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Account Management -->
+            <section class="view" id="it-accounts">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box" style="flex:1;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input id="itAccSearch" placeholder="Search accounts by employee ID, name, or role..." oninput="renderITAccounts()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+                        </div>
+                        <select class="filter" id="itAccRoleFilter" onchange="renderITAccounts()"><option value="">Role: All</option><option>Requester</option><option>Handler</option><option>Messenger</option><option>Receiver</option><option>Admin</option></select>
+                        <select class="filter" id="itAccStatusFilter" onchange="renderITAccounts()"><option value="">Status: All</option><option>Active</option><option>Disabled</option></select>
+                    </div>
+                    <div class="section-title">Account Management</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Employee ID</th><th>Name</th><th>Role</th><th>Status</th><th>Last Login</th><th></th></tr></thead>
+                        <tbody id="itAccountsBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <!-- Account Detail Floating Island Overlay -->
+                <div class="modal-overlay" id="accountDetailOverlay" onclick="if(event.target===this) closeAccountDetailIsland()">
+                    <div class="modal-card" style="max-width: 480px; text-align: left;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--line);">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 46px; height: 46px; border-radius: 50%; background: var(--sage); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;" id="accIslandAvatar">
+                                    JD
+                                </div>
+                                <div>
+                                    <div style="font-weight: 800; font-size: 16px; color: var(--ink);" id="accIslandName">Juan Dela Cruz</div>
+                                    <div style="font-size: 12px; color: var(--muted);" id="accIslandEmpId">ID: 20261395</div>
+                                </div>
+                            </div>
+                            <span id="accIslandStatusPill" class="pill approved">Active</span>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div>
+                                    <label class="form-label">System Role</label>
+                                    <div style="font-weight: 700; color: var(--ink);" id="accIslandRole">Requester</div>
+                                </div>
+                                <div>
+                                    <label class="form-label">Last Active Login</label>
+                                    <div style="font-weight: 600; color: var(--ink-soft);" id="accIslandLastLogin">2026-07-08 08:42 AM</div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div>
+                                    <label class="form-label">Department</label>
+                                    <div style="font-weight: 600; color: var(--ink-soft);" id="accIslandDept">Logistics Operations</div>
+                                </div>
+                                <div>
+                                    <label class="form-label">Company Email</label>
+                                    <div style="font-weight: 600; color: var(--ink-soft);" id="accIslandEmail">j.delacruz@veritrail.io</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="accIslandNoticeMsg" style="display: none; margin-top: 12px; padding: 8px 12px; background: rgba(148, 166, 132, 0.15); border: 1px solid var(--sage); border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--ink);"></div>
+
+                        <div style="margin-top: 20px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="resetUserPasswordFromIsland(this)">Reset Password</button>
+
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="closeAccountDetailIsland()">Close</button>
+                                <button type="button" id="accIslandToggleStatusBtn" class="btn btn-terracotta btn-sm" style="background: var(--danger);" onclick="toggleAccountStatusFromIsland()">Disable Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Create Administrator Account -->
+            <section class="view" id="it-create-admin">
+                <div class="card">
+                    <div class="section-title">Create Administrator Account</div>
+                    <div class="section-hint">Administrator accounts are provisioned exclusively by the IT Administrator. Verify the employee first, then generate their credentials. No public registration.</div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label>Employee ID</label>
+                            <input type="text" id="caEmpId" placeholder="e.g. 20261234" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-family:inherit;">
+                        </div>
+                        <div class="field-group" style="display:flex;align-items:flex-end;">
+                            <button class="btn btn-outline btn-sm" onclick="verifyEmployeeForAdmin()">Verify Employee</button>
+                        </div>
+                    </div>
+                    <div id="caVerifyResult"></div>
+
+                    <div id="caDetailsForm" style="display:none;margin-top:18px;">
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Full Name</label>
+                                <input type="text" id="caName" placeholder="e.g. Miguel Torres" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-family:inherit;">
+                            </div>
+                            <div class="field-group">
+                                <label>Department</label>
+                                <input type="text" id="caDept" placeholder="e.g. Logistics" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-family:inherit;">
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Company Email</label>
+                                <input type="email" id="caEmail" placeholder="name@veritrail.io" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-family:inherit;">
+                            </div>
+                            <div class="field-group">
+                                <label>Office</label>
+                                <input type="text" id="caOffice" placeholder="e.g. Makati Head Office" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:12px;font-family:inherit;">
+                            </div>
+                        </div>
+                        <button class="btn btn-terracotta btn-sm" style="margin-top:14px;" onclick="provisionAdminAccount()">Provision Administrator Account</button>
+                    </div>
+
+                    <div id="caResultCard"></div>
+                </div>
+            </section>
+
+            <!-- Audit Logs -->
+            <section class="view" id="it-audit">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box" style="flex:1;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input id="itAuditSearch" placeholder="Search audit logs by employee ID, user, activity..." oninput="renderITAudit()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+                        </div>
+                        <select class="filter"><option>Date Range</option></select>
+                        <select class="filter"><option>Role: All</option></select>
+                        <select class="filter"><option>Department: All</option></select>
+                    </div>
+                    <div class="section-title">Audit Logs</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Date</th><th>Time</th><th>Employee ID</th><th>User</th><th>Role</th><th>Activity</th><th>Status</th></tr></thead>
+                        <tbody id="itAuditBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- System Logs -->
+            <section class="view" id="it-syslogs">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box" style="flex:1;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input id="itSyslogSearch" placeholder="Search system logs by component, event, or description..." oninput="renderITSyslogs()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+                        </div>
+                        <select class="filter"><option>Date Range</option></select>
+                        <select class="filter"><option>Severity: All</option><option>Info</option><option>Warning</option><option>Error</option></select>
+                        <select class="filter"><option>Component: All</option></select>
+                    </div>
+                    <div class="section-title">System Logs</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Date</th><th>Time</th><th>Component</th><th>Event</th><th>Severity</th><th>Description</th><th>Status</th></tr></thead>
+                        <tbody id="itSyslogBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Database Maintenance -->
+            <section class="view" id="it-database">
+                <div class="card">
+                    <div class="field-row" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+                        <div class="field-group"><label>Database Status</label><div class="value" id="dbStatusVal">Connected</div></div>
+                        <div class="field-group"><label>Database Size</label><div class="value">3 GB</div></div>
+                        <div class="field-group"><label>Storage Usage</label><div class="value">28%</div></div>
+                        <div class="field-group"><label>Last Backup</label><div class="value" id="dbLastBackupVal">July 9, 2026 10:00 PM</div></div>
+                        <div class="field-group"><label>Backup Schedule</label><div class="value">Daily (10:00 PM)</div></div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn btn-sage btn-sm" onclick="dbAction('Backup')">Backup Database</button>
+                        <button class="btn btn-outline btn-sm" onclick="dbAction('Restore')">Restore</button>
+                        <button class="btn btn-outline btn-sm" onclick="dbAction('Export')">Export</button>
+                        <button class="btn btn-ghost btn-sm" onclick="dbAction('Refresh Status')">Refresh Status</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="section-title">Recent Backup</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Date &amp; Time</th><th>Type</th><th>Size</th><th>Status</th></tr></thead>
+                        <tbody id="dbBackupBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- System Settings -->
+            <section class="view" id="it-settings">
+                <div class="card">
+                    <div class="toolbar" id="settingsTabs" style="gap:8px;"></div>
+                    <div id="settingsBody"></div>
+                    <button class="btn btn-sage" style="margin-top:20px;" onclick="toast('Changes saved')">Save Changes</button>
+                </div>
+            </section>
+
+            <!-- Account Support Center -->
+            <section class="view" id="it-support">
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box" style="flex:1;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input id="itSupportSearch" placeholder="Search issue tickets by ID, employee, or issue..." oninput="renderITSupport()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+                        </div>
+                        <select class="filter" id="itSupportStatusFilter" onchange="renderITSupport()"><option value="">Status: All</option><option>Open</option><option>In Progress</option><option>Resolved</option></select>
+                        <select class="filter" id="itSupportPriorityFilter" onchange="renderITSupport()"><option value="">Priority: All</option><option>High</option><option>Medium</option></select>
+                    </div>
+                    <div class="section-title">Issue Tickets</div>
+                    <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>Ticket ID</th><th>Employee</th><th>Issue</th><th>Priority</th><th>Status</th><th></th></tr></thead>
+                        <tbody id="itSupportBody"></tbody>
+                    </table>
+                    </div>
+                    <div id="itSupportDetail"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<!-- ============ MODALS ============ -->
+
+<!-- Delete Supplier Confirmation Modal-->
+<div class="modal-overlay" id="deleteSupplierOverlay" onclick="if(event.target===this) closeDeleteModal()">
+<div class="modal-card">
+    <div class="modal-icon" style="background: var(--danger);">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+    </div>
+    <div class="modal-title">Delete Supplier?</div>
+    <div class="modal-subtitle" id="deleteModalSubtitle">Are you sure you want to remove this supplier from the registry?</div>
+    <input type="hidden" id="deleteSupplierTargetIndex">
+        
+    <div class="modal-actions" style="margin-top: 20px;">
+    <button class="btn btn-outline btn-sm" onclick="closeDeleteModal()">Cancel</button>
+    <button class="btn btn-terracotta btn-sm" style="background: var(--danger);" onclick="confirmDeleteSupplier()">Confirm Delete</button>
+    </div>
+</div>
+</div>
+
+<!-- Add / Edit Supplier Modal -->
+<div class="modal-overlay" id="supplierModalOverlay" onclick="if(event.target===this) closeSupplierModal()">
+<div class="modal-card" style="max-width: 480px; text-align: left;">
+    <div class="section-title" id="supplierModalTitle" style="margin-top:0;">Add New Supplier</div>
+    <div class="section-hint" style="margin-bottom: 16px;">Enter company details and main categories supplied.</div>
+    
+    <input type="hidden" id="supplierEditIndex" value="">
+
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 4px;">Company Name</label>
+        <input type="text" id="supName" class="form-control" placeholder="e.g. Acme Logistics" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 4px;">Contact Person</label>
+        <input type="text" id="supContact" class="form-control" placeholder="e.g. Maria Santos" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+        </div>
+        <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 4px;">Contact Number</label>
+        <input type="text" id="supPhone" class="form-control" placeholder="e.g. 09-171-0000" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+        </div>
+    </div>
+
+    <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 4px;">Email</label>
+        <input type="email" id="supEmail" class="form-control" placeholder="e.g. contact@acme.ph" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+    </div>
+
+    <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 4px;">Category Supplied</label>
+        <select id="supCats" class="form-control" style="width: 100%; padding: 10px 36px 10px 12px; border: 1px solid var(--line); border-radius: 9px; background-color: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+            <option value="">Select Classification...</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Home &amp; Living">Home &amp; Living</option>
+            <option value="Apparel">Apparel</option>
+            <option value="Sports">Sports</option>
+            <option value="Stationery">Stationery</option>
+            <option value="Documents &amp; Records">Documents &amp; Records</option>
+            <option value="Tools &amp; Tool Kits">Tools &amp; Tool Kits</option>
+        </select>  
+    </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
+    <button class="btn btn-outline btn-sm" onclick="closeSupplierModal()">Cancel</button>
+    <button class="btn btn-sage btn-sm" onclick="saveSupplier()">Save Supplier</button>
+    </div>
+</div>
+</div>
+
+<!-- Add/Edit Classification Modal -->
+<div class="modal-overlay" id="classModalOverlay" onclick="if(event.target===this) closeClassModal()">
+<div class="modal-card" style="max-width: 440px; text-align: left;">
+    <div class="section-title" id="classModalTitle" style="margin-top:0;">Add Classification</div>
+    <input type="hidden" id="classEditIdx">
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 4px;">Category Name</label>
+        <input type="text" id="classNameInput" class="form-control" placeholder="e.g. Hazardous Gear" style="width: 100%;">
+    </div>
+    <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 4px;">Description</label>
+        <textarea id="classDescInput" style="width: 100%; min-height: 60px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; font: inherit; font-size: 13px; background: var(--cream);" placeholder="Brief description of inventory items..."></textarea>
+    </div>
+    <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--ink-soft); display: block; margin-bottom: 4px;">Packaging Rule Requirement</label>
+        <input type="text" id="classRuleInput" class="form-control" placeholder="e.g. Handler's choice or Sealed Envelope required" style="width: 100%;">
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+        <input type="checkbox" id="classRequiredCheck" style="width: 16px; height: 16px; cursor: pointer;">
+        <label for="classRequiredCheck" style="font-size: 12px; font-weight: 600; cursor: pointer;">Mandatory Packaging Rule</label>
+    </div>
+    </div>
+    <div class="modal-actions" style="margin-top: 20px; justify-content: flex-end; gap: 8px;">
+    <button class="btn btn-outline btn-sm" onclick="closeClassModal()">Cancel</button>
+    <button class="btn btn-sage btn-sm" onclick="saveClassification()">Save Classification</button>
+    </div>
+</div>
+</div>
+
+<!-- Custom Delete Classification Confirmation Modal -->
+<div class="modal-overlay" id="deleteClassOverlay" onclick="if(event.target===this) closeDeleteClassModal()">
+<div class="modal-card">
+    <div class="modal-icon" style="background: var(--danger);">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+    </div>
+    <div class="modal-title">Delete Classification?</div>
+    <div class="modal-subtitle" id="deleteClassSubtitle">Are you sure you want to remove this category?</div>
+    <input type="hidden" id="deleteClassIdx">
+    <div class="modal-actions" style="margin-top: 20px;">
+    <button class="btn btn-outline btn-sm" onclick="closeDeleteClassModal()">Cancel</button>
+    <button class="btn btn-terracotta btn-sm" style="background: var(--danger);" onclick="confirmDeleteClassification()">Confirm Delete</button>
+    </div>
+</div>
+</div>
+
+<!-- Admin Tracking Modal -->
+<div class="modal-overlay" id="adminTrackOverlay" onclick="if(event.target===this) closeAdminTrackModal()">
+<div class="modal-card" style="max-width: 520px; text-align: left;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+    <div>
+        <div class="section-title" id="trackModalTitle" style="margin: 0;">Shipment Tracking</div>
+        <div class="section-hint" id="trackModalSub" style="margin: 4px 0 0;">Request ID: TRX-000</div>
+    </div>
+    <span id="trackModalStagePill" class="pill transit">In Transit</span>
+    </div>
+
+    <div id="adminTrackModalBody" style="margin-top: 14px;"></div>
+
+    <div class="modal-actions" style="margin-top: 20px; justify-content: flex-end;">
+    <button class="btn btn-outline btn-sm" onclick="closeAdminTrackModal()">Close</button>
+    </div>
+</div>
+</div>
+
+<!-- Add / Edit Inventory Modal -->
+<div class="modal-overlay" id="editInventoryOverlay" onclick="if(event.target===this) closeEditInventoryModal()">
+<div class="modal-card" style="max-width: 520px; text-align: left; box-sizing: border-box; overflow: hidden;">
+    <div class="section-title" id="editModalTitle" style="margin-top:0;">Edit Inventory Item</div>
+    <div class="section-hint" style="margin-bottom: 18px;">Specify item details, category, SKU, and stock count.</div>
+    
+    <input type="hidden" id="editItemId">
+    
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+            <label class="form-label">Item Name</label>
+            <input type="text" id="editItemName" class="vt-input" placeholder="e.g. ThinkPad Lenovo Laptop">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+            <label class="form-label">Category</label>
+            <select id="editItemCat" class="vt-input vt-select" onchange="handleCategoryChange()">
+                <option value="">Select Category...</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Home &amp; Living">Home &amp; Living</option>
+                <option value="Apparel">Apparel</option>
+                <option value="Sports">Sports</option>
+                <option value="Stationery">Stationery</option>
+                <option value="Documents &amp; Records">Documents &amp; Records</option>
+                <option value="Tools &amp; Tool Kits">Tools &amp; Tool Kits</option>
+            </select>
+            </div>
+            <div>
+                <label class="form-label">SKU</label>
+                <input type="text" id="editItemSku" class="vt-input" placeholder="e.g. EL-1029">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+                <label class="form-label">Stock Level (Units)</label>
+                <input type="number" id="editItemLevel" class="vt-input" placeholder="e.g. 5">
+            </div>
+            <div>
+                <label class="form-label">Low Stock Threshold (Units)</label>
+                <input type="number" id="editItemThreshold" class="vt-input" placeholder="e.g. 5">
+            </div>
+        </div>
+
+        <div>
+            <label class="form-label">Supplier</label>
+            <select id="editItemSupplier" class="vt-input vt-select" onchange="handleSupplierChange()">
+                <option value="">Select Supplier...</option>
+            </select>
+        </div>
+    </div>
+
+    <div style="margin-top: 24px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn btn-outline btn-sm" onclick="closeEditInventoryModal()" style="min-width: 100px;">Cancel</button>
+        <button class="btn btn-sage btn-sm" onclick="saveInventoryEdit()" style="min-width: 110px;">Save Item</button>
+    </div>
+</div>
+</div>
+
+<!-- Custom Delete Inventory Confirmation Modal -->
+<div class="modal-overlay" id="deleteInventoryOverlay" onclick="if(event.target===this) closeDeleteInventoryModal()">
+<div class="modal-card">
+    <div class="modal-icon" style="background: var(--danger);">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+    </div>
+    <div class="modal-title">Delete Inventory Item?</div>
+    <div class="modal-subtitle" id="deleteInvModalSubtitle">Are you sure you want to remove this item from the warehouse?</div>
+    <input type="hidden" id="deleteInventoryTargetIndex">
+    
+    <div class="modal-actions" style="margin-top: 20px;">
+    <button class="btn btn-outline btn-sm" onclick="closeDeleteInventoryModal()">Cancel</button>
+    <button class="btn btn-terracotta btn-sm" style="background: var(--danger);" onclick="confirmDeleteInventoryItem()">Confirm Delete</button>
+    </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+<script>
+
+currentRole = 'admin';
+
+const viewTitles = {
+    // Supervisor / Admin Views
+    "a-home": "Home",
+    "a-inventory": "Inventory",
+    "a-requests": "Requests",
+    "a-classification": "Classification",
+    "a-suppliers": "Supply Registry",
+    "a-comms": "Chat Inbox",
+    "a-disputes": "Dispute Center",
+    "a-settings": "Account Settings",
+
+    // IT Administrator Views
+    "it-dashboard": "IT Overview",
+    "it-accounts": "Account Management",
+    "it-tickets": "Account Requests",
+    "it-create-admin": "Provision Admin Account",
+    "it-audit": "Audit Logs",
+    "it-syslogs": "System Logs",
+    "it-database": "Database Maintenance",
+    "it-settings": "System Settings",
+    "it-support": "Account Support Center"
+};
+
+function showView(el, id) {
+  document.querySelectorAll('nav.mainnav a').forEach(a => a.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+  
+  const pageName = viewTitles[id] || 'Dashboard';
+  const titleEl = document.getElementById('pageTitle');
+  const breadcrumbEl = document.getElementById('topbarBreadcrumb');
+  
+  const categoryLabel = id.startsWith('it-') ? 'IT Administrator' : 'Administrator';
+  if (titleEl) titleEl.textContent = pageName;
+  if (breadcrumbEl) breadcrumbEl.textContent = `${categoryLabel} / ${pageName}`;
+  
+  if (id === 'a-settings' && typeof loadAdminSettings === 'function') {
+    loadAdminSettings();
+  }
+
+  if (id === 'it-dashboard' && typeof renderITDashboard === 'function') {
+    renderITDashboard();
+  }
+
+  // IT View Render Initializers
+  if (id === 'it-dashboard' && typeof renderITDashboard === 'function') renderITDashboard();
+  if (id === 'it-accounts' && typeof renderITAccounts === 'function') renderITAccounts();
+  if (id === 'it-tickets' && typeof renderITTickets === 'function') renderITTickets();
+  if (id === 'it-audit' && typeof renderITAudit === 'function') renderITAudit();
+  if (id === 'it-syslogs' && typeof renderITSyslogs === 'function') renderITSyslogs();
+  if (id === 'it-support' && typeof renderITSupport === 'function') renderITSupport();
+
+  closeSidebar();
+}
+    
+// Route topbar search input based on active view
+function handleTopbarSearch(query) {
+    const activeView = document.querySelector('.view.active')?.id;
+
+    if (activeView === 'a-disputes') {
+        renderAdminDisputes(query);
+    } else if (activeView === 'a-requests' && typeof renderAdminRequests === 'function') {
+        renderAdminRequests(query);
+    } else if (activeView === 'a-inventory' && typeof renderAdminInventory === 'function') {
+        renderAdminInventory(query);
+    }
+}
+
+// Render Admin Disputes with optional query parameter from topbar
+function renderAdminDisputes(query = '') {
+    const searchVal = (query || document.getElementById('topbarSearch')?.value || '').trim().toLowerCase();
+    const body = document.getElementById('adminDisputesBody');
+    if (!body || typeof adminDisputes === 'undefined') return;
+
+    const rows = Object.values(adminDisputes).filter(d => {
+        if (!searchVal) return true;
+        return (
+        d.id.toLowerCase().includes(searchVal) ||
+        d.reqId.toLowerCase().includes(searchVal) ||
+        d.raisedBy.toLowerCase().includes(searchVal) ||
+        d.status.toLowerCase().includes(searchVal)
+        );
+    });
+
+    body.innerHTML = rows.length ? rows.map(d => `
+        <tr>
+        <td><strong>${d.id}</strong></td>
+        <td>${d.reqId}</td>
+        <td>${d.raisedBy}</td>
+        <td>${d.date}</td>
+        <td><span class="pill ${d.status === 'Open' ? 'submitted' : 'complete'}">${d.status}</span></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openDispute('${d.id}')">View</button></td>
+        </tr>
+    `).join('') : `<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:20px;">No dispute tickets match "${escapeHtml(searchVal)}".</td></tr>`;
+}
+
+function switchDashboardMode(mode) {
+  const navAdmin = document.getElementById('nav-admin');
+  const navIT = document.getElementById('nav-it');
+  const btnAdmin = document.getElementById('btnSwitchAdmin');
+  const btnIT = document.getElementById('btnSwitchIT');
+  const roleLabel = document.getElementById('roleLabel');
+
+  if (mode === 'it') {
+    if (navAdmin) navAdmin.style.display = 'none';
+    if (navIT) navIT.style.display = 'block';
+
+    if (btnAdmin) { btnAdmin.style.background = 'transparent'; btnAdmin.style.color = 'var(--muted)'; }
+    if (btnIT) { btnIT.style.background = 'var(--sage)'; btnIT.style.color = '#fff'; }
+    if (roleLabel) roleLabel.textContent = "IT Administrator";
+
+    // Switch to default IT view
+    const firstITLink = navIT.querySelector('a');
+    showView(firstITLink, 'it-dashboard');
+  } else {
+    if (navAdmin) navAdmin.style.display = 'block';
+    if (navIT) navIT.style.display = 'none';
+
+    if (btnAdmin) { btnAdmin.style.background = 'var(--sage)'; btnAdmin.style.color = '#fff'; }
+    if (btnIT) { btnIT.style.background = 'transparent'; btnIT.style.color = 'var(--muted)'; }
+    if (roleLabel) roleLabel.textContent = "Supervisor";
+
+    // Switch to default Admin view
+    const firstAdminLink = navAdmin.querySelector('a');
+    showView(firstAdminLink, 'a-home');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Force topbar badge & sidebar profile to reflect Administrator
+    const badge = document.getElementById('topbarRoleBadge');
+    if(badge) badge.textContent = "Administrator";
+
+    if(typeof activeSessionUser !== 'undefined' && activeSessionUser) {
+        const uname = document.getElementById('sidebarUserName');
+        const av = document.getElementById('sidebarAvatar');
+        if(uname) uname.textContent = activeSessionUser.displayName;
+        if(av && typeof initials === 'function') av.textContent = initials(activeSessionUser.displayName);
+    }
+
+    // 2. Render all admin tables, charts, and lists
+    if(typeof renderAdminPipelineStats === 'function') renderAdminPipelineStats();
+    if(typeof renderMonthlyCompletedChart === 'function') renderMonthlyCompletedChart();
+    if(typeof renderAdminHistory === 'function') renderAdminHistory();
+    if(typeof renderAdminLowStock === 'function') renderAdminLowStock();
+    if(typeof renderAdminInventory === 'function') renderAdminInventory();
+    if(typeof renderAdminRequests === 'function') renderAdminRequests();
+    if(typeof renderClassification === 'function') renderClassification('adminClassGrid');
+    if(typeof renderAdminSuppliers === 'function') renderAdminSuppliers();
+    if(typeof renderAdminDisputes === 'function') renderAdminDisputes();
+    
+    if(typeof renderInboxGeneric === 'function' && typeof adminConversations !== 'undefined') {
+        renderInboxGeneric('adminInboxList', adminConversations, selectedConv.admin, 'admin');
+        const chatTitle = document.getElementById('adminChatTitle');
+        if(chatTitle) chatTitle.textContent = adminConversations[selectedConv.admin].name;
+        renderChatBubbles('adminChatThread', adminConversations[selectedConv.admin].messages);
+    }
+    
+    if(typeof renderNotifications === 'function') renderNotifications();
+
+    if(typeof renderAdminClassificationView === 'function') renderAdminClassificationView();
+    if(typeof renderHomeLowStock === 'function') renderHomeLowStock();
+    if(typeof renderAdminInventory === 'function') renderAdminInventory();
+});
+</script>
+
+</body>
+</html>
