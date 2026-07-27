@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VeriTrail — Standard User Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+  <!-- ============ SIDEBAR (always in DOM; drawer on small screens) ============ -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Clickable Brand Logo Header -->
+    <div class="brand" style="cursor: pointer;" onclick="window.location.reload();" title="Click to refresh workspace">
+      <svg viewBox="0 0 40 40" width="30" height="30">
+        <polygon points="8,22 22,4 34,4 22,26" fill="#94A684"/>
+        <polygon points="8,22 18,14 22,26 12,32" fill="#3F5A49"/>
+        <circle cx="14" cy="18" r="3.4" fill="none" stroke="#FBF7EF" stroke-width="2"/>
+        <circle cx="12" cy="26" r="2.6" fill="#C47A57"/>
+      </svg>
+      <div class="brand-text">
+        <div class="name"><span class="veri">Veri</span><span class="trail">Trail</span></div>
+        <div class="tag">The Verifiable Logistics Chain</div>
+      </div>
+      <button class="sidebar-close" onclick="event.stopPropagation(); closeSidebar();" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="workspace admin-workspace">
+      <div class="workspace-label">Administrator Access</div>
+      <button class="btn btn-terracotta btn-sm" style="width:100%;" onclick="window.location.href='admin.html'">Open Admin Dashboard →</button>
+    </div>
+
+
+    <div class="workspace">
+      <div class="workspace-label">Operational Workspace</div>
+      <div class="role-toggle">
+        <button id="btnRequester" class="active" onclick="switchRole('requester')">Requester</button>
+        <button id="btnHandler" onclick="switchRole('handler')">Handler</button>
+        <button id="btnMessenger" onclick="switchRole('messenger')">Messenger</button>
+        <button id="btnReceiver" onclick="switchRole('receiver')">Receiver</button>
+      </div>
+    </div>
+
+    <!-- Requester nav -->
+    <nav class="mainnav" id="nav-requester">
+      <div class="navgroup-label">Requester Dashboard</div>
+      <a data-view="req-create" class="active" onclick="showView(this,'req-create')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M2 3h2l1 3"/></svg>
+        Create Transfer Request
+      </a>
+      <a data-view="req-outbound" onclick="showView(this,'req-outbound')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Outbound Requests
+      </a>
+      <a data-view="req-trail" onclick="showView(this,'req-trail')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Request Trail
+      </a>
+      <a data-view="req-tracking" onclick="showView(this,'req-tracking')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>
+        Shipment Tracking
+      </a>
+      <a data-view="req-comms" onclick="showView(this,'req-comms')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v13H7l-3 3z"/></svg>
+        Communication Hub
+        <span class="badge" id="reqUnreadBadge">2</span>
+      </a>
+      <a data-view="req-disputes" onclick="showView(this,'req-disputes')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        Dispute Center
+        <span class="badge" id="reqDisputeBadge">0</span>
+      </a>
+      <a data-view="req-support" onclick="showView(this,'req-support')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.7-2 2-2 3.5"/><circle cx="12" cy="17" r="0.6"/></svg>
+        Account Support Center
+      </a>
+    </nav>
+
+    <!-- Handler nav -->
+    <nav class="mainnav" id="nav-handler" style="display:none;">
+      <div class="navgroup-label">Handler Dashboard</div>
+      <a data-view="h-queue" class="active" onclick="showView(this,'h-queue')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg>
+        Task Queue
+      </a>
+      <a data-view="h-classification" onclick="showView(this,'h-classification')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Material Classification
+      </a>
+      <a data-view="h-inventory" onclick="showView(this,'h-inventory')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+        Inventory View
+      </a>
+      <a data-view="h-trail" onclick="showView(this,'h-trail')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Request Trail
+      </a>
+      <a data-view="h-comms" onclick="showView(this,'h-comms')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v13H7l-3 3z"/></svg>
+        Communication Hub
+        <span class="badge" id="handlerUnreadBadge">2</span>
+      </a>
+      <a data-view="h-support" onclick="showView(this,'h-support')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.7-2 2-2 3.5"/><circle cx="12" cy="17" r="0.6"/></svg>
+        Account Support Center
+      </a>
+    </nav>
+
+    <!-- Messenger nav -->
+    <nav class="mainnav" id="nav-messenger" style="display:none;">
+      <div class="navgroup-label">Messenger Dashboard</div>
+      <a data-view="m-queue" class="active" onclick="showView(this,'m-queue')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/></svg>
+        Delivery Task Queue
+      </a>
+      <a data-view="m-history" onclick="showView(this,'m-history')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Delivery History
+      </a>
+      <a data-view="m-comms" onclick="showView(this,'m-comms')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v13H7l-3 3z"/></svg>
+        Communication Hub
+        <span class="badge" id="messengerUnreadBadge">1</span>
+      </a>
+      <a data-view="m-support" onclick="showView(this,'m-support')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.7-2 2-2 3.5"/><circle cx="12" cy="17" r="0.6"/></svg>
+        Account Support Center
+      </a>
+    </nav>
+
+    <!-- Receiver nav -->
+    <nav class="mainnav" id="nav-receiver" style="display:none;">
+      <div class="navgroup-label">Receiver Dashboard</div>
+      <a data-view="r-inbound" class="active" onclick="showView(this,'r-inbound')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Incoming Deliveries
+      </a>
+      <a data-view="r-inspection" onclick="showView(this,'r-inspection')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        Final Inspection Wizard
+      </a>
+      <a data-view="r-trail" onclick="showView(this,'r-trail')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        My Request Trail
+      </a>
+      <a data-view="r-comms" onclick="showView(this,'r-comms')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v13H7l-3 3z"/></svg>
+        Communication Hub
+        <span class="badge" id="receiverUnreadBadge">1</span>
+      </a>
+      <a data-view="r-disputes" onclick="showView(this,'r-disputes')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        Dispute Center
+        <span class="badge" id="receiverDisputeBadge">0</span>
+      </a>
+      <a data-view="r-support" onclick="showView(this,'r-support')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.7-2 2-2 3.5"/><circle cx="12" cy="17" r="0.6"/></svg>
+        Account Support Center
+      </a>
+    </nav>
+
+
+    
+    <div class="sidebar-divider"></div>
+
+    <nav class="mainnav" id="nav-shared" style="flex:0 0 auto;margin-top:0;">
+      <a data-view="account" onclick="showView(this,'account')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+        Account
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="avatar">JD</div>
+      <div class="who">
+        <div class="n">Juan Dela Cruz</div>
+        <div class="r" id="roleLabel">Requester</div>
+      </div>
+      <button title="Toggle light / dark mode" onclick="toggleTheme()" id="themeBtn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="content-col">
+    <main>
+      <div class="topbar">
+        <div class="topbar-left">
+          <!-- Desktop & Mobile Hamburger Toggle Button -->
+          <button class="menu-toggle" onclick="toggleSidebarDesktop()" aria-label="Toggle menu" style="display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span style="font-size: 11px; color: var(--muted);" id="topbarBreadcrumb">Requester Workspace / Create Transfer Request</span>
+            </div>
+            <h1 class="page-title" id="pageTitle" style="font-size: 22px; margin: 0;">Create Transfer Request</h1>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="bell" id="notifBell" onclick="toggleNotifications(event)">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            <span class="dot" id="notifDot" style="display:none;">0</span>
+            <div class="notif-panel" id="notifPanel" onclick="event.stopPropagation()">
+              <div class="notif-panel-header">
+                <span>Notifications</span>
+                <button type="button" onclick="markAllNotificationsRead(event)">Mark all read</button>
+              </div>
+              <div class="notif-list" id="notifList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= REQUESTER VIEWS ================= -->
+
+      <!-- Create Transfer Request -->
+      <section class="view active" id="req-create">
+        <div class="split">
+          <div>
+            <div class="toolbar">
+              <div class="search-box" style="flex:1;">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input id="catalogSearch" placeholder="Search inventory items" oninput="renderCatalog()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+              </div>
+              <select class="filter" id="catalogCatFilter" onchange="renderCatalog()">
+                <option value="">All Categories</option>
+                <option>Electronics</option>
+                <option>Home &amp; Living</option>
+                <option>Apparel</option>
+                <option>Sports</option>
+                <option>Stationery</option>
+                <option>Documents &amp; Records</option>
+                <option>Tools &amp; Tool Kits</option>
+              </select>
+              <select class="filter" id="catalogStockFilter" onchange="renderCatalog()">
+                <option value="">All Stock Levels</option>
+                <option value="in">In Stock</option>
+                <option value="low">Low Stock</option>
+                <option value="out">Out of Stock</option>
+              </select>
+            </div>
+
+            <div class="section-title">Inventory Browser</div>
+            <div class="catalog-grid" id="catalogGrid"></div>
+          </div>
+
+          <div>
+          <div class="card" style="position:sticky;top:24px;">
+            <div class="section-title" style="margin-bottom:12px;">Shopping Cart</div>
+            <div id="cartList"></div>
+            <div class="cart-total"><span>Total Items</span><span id="cartTotal">0</span></div>
+
+            <!-- Added Recipient Input Field -->
+            <div class="pack-pref" style="margin-top: 14px;">
+              <label>Recipient Name</label>
+              <input type="text" id="requestRecipient" placeholder="e.g. Axel San Juan" style="width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--cream); font:inherit; color:var(--ink); margin-top:4px;">
+            </div>
+
+            <div class="pack-pref" style="margin-top: 10px; border-top: none; padding-top: 0;">
+              <label>Delivery Address / Location</label>
+              <input type="text" id="requestAddress" placeholder="e.g. 5th Floor, Makati HQ Office" style="width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--cream); font:inherit; color:var(--ink); margin-top:4px;">
+            </div>
+
+            <div class="pack-pref">
+              <label>Packaging Preference</label>
+              <select id="packagingPref">
+                <option value="">No preference — let Handler decide</option>
+                <option>Bubble Wrap</option>
+                <option>Bubble Wrap with Box</option>
+                <option>Box</option>
+                <option>Plastic Bag</option>
+                <option>Sealed Envelope</option>
+              </select>
+              <div class="pack-note">Note: items under <strong>Documents &amp; Records</strong> are always packed in a Sealed Envelope regardless of preference.</div>
+            </div>
+
+            <!-- Inside section#req-create Shopping Cart Card -->
+            <div class="pack-pref" style="margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 12px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--ink);">
+                <input type="checkbox" id="attachWaiverChk" onchange="toggleWaiverSignatureBox()" style="width: 16px; height: 16px; accent-color: var(--sage); cursor: pointer;">
+                Attach Sealed Package Waiver / Notice
+              </label>
+              <div class="pack-note">Check this if items are factory-sealed and should not be unsealed or opened during Handler QC or Final Inspection.</div>
+            </div>
+
+            <!-- Dynamic Waiver Signature Box (Hidden by default) -->
+            <div id="waiverSignatureBox" style="display: none; margin-top: 12px; padding: 12px; background: var(--soft-lavender); border: 1px solid var(--line); border-radius: 10px;">
+              <label class="form-label" style="color: var(--ink); margin-bottom: 4px;">Sender Declaration &amp; Signature</label>
+              <textarea id="waiverNoticeText" class="vt-input" style="min-height: 60px; font-size: 11.5px; margin-bottom: 8px;" placeholder="Notice text from sender...">Item is in brand-new factory original seal. Do not open outer packaging or break seal for testing.</textarea>
+
+              <label class="form-label" style="color: var(--ink); margin-bottom: 4px;">Digital Signature / Full Name</label>
+              <input type="text" id="waiverSignatureInput" class="vt-input" placeholder="Type full name to sign e.g. Juan Dela Cruz" style="font-size: 12px;">
+            </div>
+
+            <div class="cart-actions">
+              <button class="btn btn-ghost" onclick="clearCart()">Clear Cart</button>
+              <button class="btn btn-terracotta" id="submitReqBtn" onclick="submitRequest()" disabled>Submit Request</button>
+            </div>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Outbound Requests -->
+      <section class="view" id="req-outbound">
+        <div class="card">
+          <div class="section-title">My Outbound Requests</div>
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Request ID</th><th>Items</th><th>Units</th><th>Date Submitted</th><th>Current Stage</th><th></th></tr></thead>
+            <tbody id="outboundBody"></tbody>
+          </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Request Trail -->
+      <section class="view" id="req-trail">
+        <div class="card">
+          <div class="section-title">Request Pipeline — click a stage to filter</div>
+          <div class="pipeline" id="reqPipeline"></div>
+          <div class="toolbar" style="margin-top:14px;">
+            <select class="filter" id="reqTrailStatusFilter" onchange="renderReqTrailBoxes()">
+              <option value="">All Statuses</option>
+              <option value="submitted">Submitted</option>
+              <option value="approved">Approved</option>
+              <option value="in-progress">In Progress (Collection–Ready to Ship)</option>
+              <option value="in-transit">In Transit</option>
+              <option value="completed">Completed</option>
+              <option value="on-hold">On Hold</option>
+              <option value="rejected">Rejected</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="clearReqTrailFilter()">Clear Filter</button>
+          </div>
+          <div class="section-title">Request Trail</div>
+          <div id="reqTrailBoxes"></div>
+        </div>
+      </section>
+
+      <!-- Shipment Tracking -->
+      <section class="view" id="req-tracking">
+        <div class="card">
+          <div class="toolbar" style="margin-bottom:6px;">
+            <select class="filter" id="trackSelect" style="flex:1;" onchange="loadTracking(this.value)"></select>
+          </div>
+          <div id="trackingBody"></div>
+        </div>
+      </section>
+
+      <!-- Requester Communication Hub -->
+      <section class="view" id="req-comms">
+        <div class="split-comms">
+          <div class="card">
+            <div class="section-title">Active Conversations</div>
+            <div class="inbox-list" id="reqInboxList"></div>
+          </div>
+          <div class="card">
+            <div class="chat-header-row">
+              <div class="section-title" id="reqChatTitle" style="margin: 0; flex: 1;">Conversation</div>
+            </div>
+            <div id="reqChatThread" style="display: flex; flex-direction: column; gap: 10px; font-size: 13px; min-height: 320px; max-height: 420px; overflow-y: auto; margin-bottom: 14px; padding-right: 4px;"></div>
+            <div style="display: flex; gap: 8px;">
+              <input id="reqChatInput" placeholder="Type a message…" style="flex: 1; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; background: var(--cream); color: var(--ink); outline: none;" onkeydown="if(event.key==='Enter') sendMessage('req')">
+              <button class="btn btn-sage" onclick="sendMessage('req')">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Requester Dispute Center -->
+      <section class="view" id="req-disputes">
+        <div class="card">
+          <!-- Toolbar with Search Bar & Status Filter -->
+          <div class="toolbar">
+            <div class="search-box" style="flex:1;">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="reqDisputeSearch" placeholder="Search disputes by ID, transaction ID, receiver, or description..." oninput="renderReqDisputesList()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+            </div>
+            <select class="filter" id="reqDisputeStatusFilter" onchange="renderReqDisputesList()">
+              <option value="">Status: All</option>
+              <option value="Open">Open</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+
+          <div class="section-title">Disputes on My Requests</div>
+          <div class="section-hint">Track the status of disputes Receivers have raised on packages you requested. Resolved by the Administrator.</div>
+          <div id="reqDisputesList"></div>
+        </div>
+      </section>
+
+      <!-- Requester Account Support Center -->
+    <section class="view" id="req-support">
+      <div class="card">
+        <div class="section-title">Raise an Account Issue</div>
+        <div class="section-hint" style="margin-bottom: 20px;">
+          Trouble with your login, password, or account access? Submit a ticket — the IT Administrator will respond here.
+      </div>    
+
+      <form onsubmit="event.preventDefault(); submitSupportTicket('req');">
+        <!-- Issue Type Selection -->
+        <div style="margin-bottom: 16px; max-width: 320px;">
+          <label class="form-label">Issue Type</label>
+          <select id="reqSupportIssueType" class="vt-input vt-select">
+            <option>Forgot Password</option>
+            <option>Account Locked</option>
+            <option>Wrong Role/Permissions</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <!-- Description Input Area -->
+        <div style="margin-bottom: 18px;">
+          <label class="form-label">Issue Description</label>
+          <textarea id="reqSupportDesc" class="vt-input" placeholder="Describe the issue in detail..." style="min-height: 110px; resize: vertical; padding: 12px; line-height: 1.5;"></textarea>
+        </div>
+
+        <!-- Footer Action -->
+        <div style="display: flex; justify-content: flex-end;">
+          <button type="submit" class="btn btn-terracotta" style="padding: 10px 22px;">
+            Submit Ticket
+          </button>
+          </div>
+      </form>
+      </div>
+
+      <!-- Tickets History Table -->
+      <div class="card">
+        <div class="section-title">My Support Tickets</div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Issue</th>
+                <th>Submitted</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="reqSupportBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+      <!-- ================= HANDLER VIEWS ================= -->
+       
+      <!-- Task Queue (Kanban Board UI) -->
+      <section class="view" id="h-queue">
+        <!-- Stat Grid Overview -->
+        <div class="stat-grid" style="margin-bottom: 20px;">
+          <div class="stat-card"><div class="val" id="statAwaiting">0</div><div class="lbl">Awaiting Collection</div></div>
+          <div class="stat-card"><div class="val" id="statQc">0</div><div class="lbl">In Quality Control</div></div>
+          <div class="stat-card"><div class="val" id="statReady">0</div><div class="lbl">Ready to Ship</div></div>
+          <div class="stat-card"><div class="val" id="statDone">0</div><div class="lbl">Completed Today</div></div>
+        </div>
+
+        <div class="section-title" style="margin-bottom: 14px;">Handler Task Kanban Board</div>
+
+        <!-- 4-Column Kanban Container -->
+        <div class="kanban-board" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; min-height: 520px; overflow-x: auto; padding-bottom: 12px;">
+          
+          <!-- Column 1: Inventory Collection -->
+          <div class="kanban-col" style="background: var(--cream-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-height: 480px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--line); padding-bottom: 8px;">
+              <span style="font-size: 13px; font-weight: 800; color: var(--ink);">1. Inventory Collection</span>
+              <span id="kb-count-0" class="pill" style="font-size: 10.5px; font-weight: 700;">0</span>
+            </div>
+            <div id="kanban-col-0" style="display: flex; flex-direction: column; gap: 10px; flex: 1;"></div>
+          </div>
+
+          <!-- Column 2: Quality Control -->
+          <div class="kanban-col" style="background: var(--cream-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-height: 480px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--line); padding-bottom: 8px;">
+              <span style="font-size: 13px; font-weight: 800; color: var(--ink);">2. Quality Control</span>
+              <span id="kb-count-1" class="pill" style="font-size: 10.5px; font-weight: 700;">0</span>
+            </div>
+            <div id="kanban-col-1" style="display: flex; flex-direction: column; gap: 10px; flex: 1;"></div>
+          </div>
+
+          <!-- Column 3: Packing -->
+          <div class="kanban-col" style="background: var(--cream-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-height: 480px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--line); padding-bottom: 8px;">
+              <span style="font-size: 13px; font-weight: 800; color: var(--ink);">3. Packing</span>
+              <span id="kb-count-2" class="pill" style="font-size: 10.5px; font-weight: 700;">0</span>
+            </div>
+            <div id="kanban-col-2" style="display: flex; flex-direction: column; gap: 10px; flex: 1;"></div>
+          </div>
+
+          <!-- Column 4: Ready to Ship -->
+          <div class="kanban-col" style="background: var(--cream-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-height: 480px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--line); padding-bottom: 8px;">
+              <span style="font-size: 13px; font-weight: 800; color: var(--ink);">4. Ready to Ship</span>
+              <span id="kb-count-3" class="pill" style="font-size: 10.5px; font-weight: 700;">0</span>
+            </div>
+            <div id="kanban-col-3" style="display: flex; flex-direction: column; gap: 10px; flex: 1;"></div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Material Classification -->
+      <section class="view" id="h-classification">
+        <div class="card">
+          <div class="section-title">Inventory Classification</div>
+          <div class="section-hint">Reference this before packing — some categories carry mandatory packaging requirements.</div>
+          <div class="class-grid" id="classGrid"></div>
+        </div>
+      </section>
+
+      <!-- Handler Inventory View -->
+      <section class="view" id="h-inventory">
+        <div class="card">
+          <!-- Toolbar matching Admin without Add/Import/Export buttons -->
+          <div class="toolbar">
+            <div class="search-box" style="flex:1;">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="handlerInvSearch" placeholder="Search inventory items..." oninput="renderInventory()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+            </div>
+            <select class="filter" id="handlerInvCatFilter" onchange="renderInventory()">
+              <option value="">All Categories</option>
+              <option>Electronics</option>
+              <option>Home &amp; Living</option>
+              <option>Apparel</option>
+              <option>Sports</option>
+              <option>Stationery</option>
+              <option>Documents &amp; Records</option>
+              <option>Tools &amp; Tool Kits</option>
+            </select>
+          </div>
+
+          <div class="section-title">Warehouse Inventory</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>SKU</th>
+                  <th>Supplier</th>
+                  <th>Stock Level</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>            
+              <tbody id="handlerInvBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Request Trail -->
+      <section class="view" id="h-trail">
+        <div class="card">
+          <!-- Toolbar with Search Bar & Status Filter -->
+          <div class="toolbar">
+            <div class="search-box" style="flex:1;">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="handlerTrailSearch" placeholder="Search by Ticket ID, Requester, or Receiver..." oninput="renderHandlerTrailBoxes()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+            </div>
+            <select class="filter" id="handlerTrailStatusFilter" onchange="renderHandlerTrailBoxes()">
+              <option value="">All Statuses</option>
+              <option value="approved">Approved</option>
+              <option value="in-progress">In Progress (Collection–Ready to Ship)</option>
+              <option value="in-transit">In Transit</option>
+              <option value="completed">Completed</option>
+              <option value="on-hold">On Hold</option>
+            </select>
+          </div>
+
+          <div class="section-title">Request Trail — By Ticket</div>
+          <div class="section-hint">Each request you've worked on gets its own trail box, showing every action from submission to dispatch.</div>
+          <div id="handlerTrailBoxes"></div>
+        </div>
+      </section>
+
+      <!-- Handler Communication Hub -->
+      <section class="view" id="h-comms">
+        <div class="split-comms">
+          <div class="card">
+            <div class="section-title">Active Conversations</div>
+            <div class="inbox-list" id="handlerInboxList"></div>
+          </div>
+          <div class="card">
+            <div class="chat-header-row">
+              <div class="section-title" id="handlerChatTitle" style="margin: 0; flex: 1;">Conversation</div>
+            </div>
+            <div id="handlerArchivedNote"></div>
+            <div id="handlerChatThread" style="display: flex; flex-direction: column; gap: 10px; font-size: 13px; min-height: 320px; max-height: 420px; overflow-y: auto; margin-bottom: 14px; padding-right: 4px;"></div>
+            <div style="display: flex; gap: 8px;" id="handlerComposerRow">
+              <input id="handlerChatInput" placeholder="Type a message…" style="flex: 1; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; background: var(--cream); color: var(--ink); outline: none;" onkeydown="if(event.key==='Enter') sendMessage('handler')">
+              <button class="btn btn-sage" onclick="sendMessage('handler')">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Handler Account Support Center -->
+      <section class="view" id="h-support">
+        <div class="card">
+          <div class="section-title">Raise an Account Issue</div>
+          <div class="section-hint" style="margin-bottom: 20px;">
+            Trouble with your login, password, or account access? Submit a ticket — the IT Administrator will respond here.
+          </div>
+
+          <form onsubmit="event.preventDefault(); submitSupportTicket('h');">
+            <!-- Issue Type Selection -->
+            <div style="margin-bottom: 16px; max-width: 320px;">
+              <label class="form-label">Issue Type</label>
+              <select id="hSupportIssueType" class="vt-input vt-select" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--cream); color: var(--ink); font-family: inherit; font-size: 13px;">
+                <option>Forgot Password</option>
+                <option>Account Locked</option>
+                <option>Wrong Role/Permissions</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <!-- Description Input Area -->
+            <div style="margin-bottom: 18px;">
+              <label class="form-label">Issue Description</label>
+              <textarea id="hSupportDesc" class="vt-input" placeholder="Describe the issue in detail..." style="width: 100%; min-height: 110px; resize: vertical; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--cream); color: var(--ink); font-family: inherit; font-size: 13px; line-height: 1.5;"></textarea>
+            </div>
+
+            <!-- Footer Action -->
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" class="btn btn-terracotta" style="padding: 10px 22px;">
+                Submit Ticket
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tickets History Table -->
+        <div class="card">
+          <div class="section-title">My Support Tickets</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticket ID</th>
+                  <th>Issue</th>
+                  <th>Submitted</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="hSupportBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MESSENGER VIEWS ================= -->
+
+      <!-- Delivery Task Queue -->
+      <section class="view" id="m-queue">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="val" id="mStatQueued">2</div><div class="lbl">Awaiting Pickup</div></div>
+          <div class="stat-card"><div class="val" id="mStatTransit">0</div><div class="lbl">In Transit</div></div>
+          <div class="stat-card"><div class="val" id="mStatDone">3</div><div class="lbl">Delivered Today</div></div>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-box" style="flex:1;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="messengerTaskSearch" placeholder="Search by Ticket ID, Requester, or Receiver..." oninput="renderMessengerDeliveries()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+          </div>
+          <select class="filter" id="messengerTaskStatusFilter" onchange="renderMessengerDeliveries()">
+            <option value="">All Delivery Statuses</option>
+            <option value="ready">Awaiting Pickup</option>
+            <option value="transit">In Transit</option>
+            <option value="arrived">Arrived at Destination</option>
+          </select>
+        </div>
+
+        <div class="section-title">Delivery Task Queue</div>
+        <div class="section-hint">Receive the packed package, start delivery for real-time GPS tracking, then confirm drop-off with Proof of Delivery.</div>
+        <div id="messengerTaskList"></div>
+      </section>
+
+      <!-- Delivery History -->
+      <section class="view" id="m-history">
+        <div class="card">
+          <!-- Toolbar with Search Bar & Status Filter -->
+          <div class="toolbar">
+            <div class="search-box" style="flex:1;">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="messengerHistorySearch" placeholder="Search by Request ID, Requester, or Receiver..." oninput="renderMessengerHistory()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+            </div>
+            <select class="filter" id="messengerHistoryStatusFilter" onchange="renderMessengerHistory()">
+              <option value="">All Delivery Statuses</option>
+              <option value="accepted">Delivered — Accepted</option>
+              <option value="pending">Delivered — Pending Inspection</option>
+              <option value="dispute">Delivered — Dispute Raised</option>
+            </select>
+          </div>
+
+          <div class="section-title">Delivery History</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Requester</th>
+                  <th>Receiver</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="messengerHistoryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Messenger Communication Hub -->
+      <section class="view" id="m-comms">
+        <div class="split-comms">
+          <div class="card">
+            <div class="section-title">Active Conversations</div>
+            <div class="inbox-list" id="messengerInboxList"></div>
+          </div>
+          <div class="card">
+            <div class="chat-header-row">
+              <div class="section-title" id="messengerChatTitle" style="margin: 0; flex: 1;">Conversation</div>
+            </div>
+            <div id="messengerChatThread" style="display: flex; flex-direction: column; gap: 10px; font-size: 13px; min-height: 320px; max-height: 420px; overflow-y: auto; margin-bottom: 14px; padding-right: 4px;"></div>
+            <div style="display: flex; gap: 8px;">
+              <input id="messengerChatInput" placeholder="Type a message…" style="flex: 1; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; background: var(--cream); color: var(--ink); outline: none;" onkeydown="if(event.key==='Enter') sendMessage('messenger')">
+              <button class="btn btn-sage" onclick="sendMessage('messenger')">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Messenger Account Support Center -->
+      <section class="view" id="m-support">
+        <div class="card">
+          <div class="section-title">Raise an Account Issue</div>
+          <div class="section-hint" style="margin-bottom: 20px;">
+            Trouble with your login, password, or account access? Submit a ticket — the IT Administrator will respond here.
+          </div>
+
+          <form onsubmit="event.preventDefault(); submitSupportTicket('m');">
+            <!-- Issue Type Selection -->
+            <div style="margin-bottom: 16px; max-width: 320px;">
+              <label class="form-label">Issue Type</label>
+              <select id="mSupportIssueType" class="vt-input vt-select" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--cream); color: var(--ink); font-family: inherit; font-size: 13px;">
+                <option>Forgot Password</option>
+                <option>Account Locked</option>
+                <option>Wrong Role/Permissions</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <!-- Description Input Area -->
+            <div style="margin-bottom: 18px;">
+              <label class="form-label">Issue Description</label>
+              <textarea id="mSupportDesc" class="vt-input" placeholder="Describe the issue in detail..." style="width: 100%; min-height: 110px; resize: vertical; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--cream); color: var(--ink); font-family: inherit; font-size: 13px; line-height: 1.5;"></textarea>
+            </div>
+
+            <!-- Footer Action -->
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" class="btn btn-terracotta" style="padding: 10px 22px;">
+                Submit Ticket
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tickets History Table -->
+        <div class="card">
+          <div class="section-title">My Support Tickets</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticket ID</th>
+                  <th>Issue</th>
+                  <th>Submitted</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="mSupportBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= RECEIVER VIEWS ================= -->
+
+      <!-- Incoming Deliveries -->
+      <section class="view" id="r-inbound">
+        <div class="card">
+          <!-- Toolbar with Search Bar & Status Filter -->
+          <div class="toolbar">
+            <div class="search-box" style="flex:1;">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="receiverInboundSearch" placeholder="Search by Request ID, Requester, or Category..." oninput="renderReceiverInbound()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+            </div>
+            <select class="filter" id="receiverInboundStatusFilter" onchange="renderReceiverInbound()">
+              <option value="">All Inbound Statuses</option>
+              <option value="ready">Awaiting Dispatch</option>
+              <option value="transit">In Transit</option>
+              <option value="arrived">Arrived — Pending Inspection</option>
+            </select>
+          </div>
+
+          <div class="section-title">Incoming Deliveries</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Items</th>
+                  <th>Units</th>
+                  <th>Date Submitted</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="receiverInboundBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Final Inspection -->
+      <section class="view" id="r-inspection">
+        <div class="card">
+          <div class="toolbar" style="margin-bottom:6px;">
+            <select class="filter" id="inspectSelect" style="flex:1;" onchange="loadInspection(this.value)"></select>
+          </div>
+          <div id="inspectionBody"></div>
+        </div>
+      </section>
+
+      <!-- Request Trail / Delivery History -->
+      <section class="view" id="r-trail">
+        <div class="card">
+          <!-- Toolbar -->
+          <div class="toolbar">
+            <div class="search-box" style="flex:1;">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="receiverTrailSearch" placeholder="Search request history by ID or keyword..." oninput="renderReceiverTrailBoxes()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+            </div>
+            <select class="filter" id="receiverTrailStatusFilter" onchange="renderReceiverTrailBoxes()">
+              <option value="">All Outcomes</option>
+              <option value="completed">Completed / Accepted</option>
+              <option value="dispute">Dispute Raised</option>
+              <option value="inspection">Pending Inspection</option>
+            </select>
+          </div>
+
+          <div class="section-title">My Request Trail</div>
+          <div class="section-hint">History of inbound deliveries you've inspected, accepted, or disputed—grouped by ticket.</div>
+          <div id="receiverTrailBoxes"></div>
+        </div>
+      </section>
+
+      <!-- Receiver Communication Hub -->
+      <section class="view" id="r-comms">
+        <div class="split-comms">
+          <div class="card">
+            <div class="section-title">Active Conversations</div>
+            <div class="inbox-list" id="receiverInboxList"></div>
+          </div>
+          <div class="card">
+            <div class="chat-header-row">
+              <div class="section-title" id="receiverChatTitle" style="margin: 0; flex: 1;">Conversation</div>
+            </div>
+            <div id="receiverChatThread" style="display: flex; flex-direction: column; gap: 10px; font-size: 13px; min-height: 320px; max-height: 420px; overflow-y: auto; margin-bottom: 14px; padding-right: 4px;"></div>
+            <div style="display: flex; gap: 8px;">
+              <input id="receiverChatInput" placeholder="Type a message…" style="flex: 1; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; background: var(--cream); color: var(--ink); outline: none;" onkeydown="if(event.key==='Enter') sendMessage('receiver')">
+              <button class="btn btn-sage" onclick="sendMessage('receiver')">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Receiver Dispute Center -->
+      <section class="view" id="r-disputes">
+        <div class="card">
+          <!-- Toolbar with Search Bar & Status Filter -->
+          <div class="toolbar">
+            <div class="search-box" style="flex:1;">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input id="receiverDisputeSearch" placeholder="Search disputes by ID, transaction ID, or description..." oninput="renderReceiverDisputesList()" style="border:none;outline:none;background:transparent;font:inherit;flex:1;color:inherit;">
+            </div>
+            <select class="filter" id="receiverDisputeStatusFilter" onchange="renderReceiverDisputesList()">
+              <option value="">Status: All</option>
+              <option value="Open">Open</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+
+          <div class="section-title">My Disputes</div>
+          <div class="section-hint">Track the status of package disputes you've raised. The Administrator reviews and resolves these.</div>
+          <div id="receiverDisputesList"></div>
+        </div>
+      </section>
+
+      <!-- Receiver Account Support Center -->
+      <section class="view" id="r-support">
+        <div class="card">
+          <div class="section-title">Raise an Account Issue</div>
+          <div class="section-hint" style="margin-bottom: 20px;">
+            Trouble with your login, password, or account access? Submit a ticket — the IT Administrator will respond here.
+          </div>
+
+          <form onsubmit="event.preventDefault(); submitSupportTicket('r');">
+            <!-- Issue Type Selection -->
+            <div style="margin-bottom: 16px; max-width: 320px;">
+              <label class="form-label">Issue Type</label>
+              <select id="rSupportIssueType" class="vt-input vt-select" style="width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--cream); color: var(--ink); font-family: inherit; font-size: 13px;">
+                <option>Forgot Password</option>
+                <option>Account Locked</option>
+                <option>Wrong Role/Permissions</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <!-- Description Input Area -->
+            <div style="margin-bottom: 18px;">
+              <label class="form-label">Issue Description</label>
+              <textarea id="rSupportDesc" class="vt-input" placeholder="Describe the issue in detail..." style="width: 100%; min-height: 110px; resize: vertical; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--cream); color: var(--ink); font-family: inherit; font-size: 13px; line-height: 1.5;"></textarea>
+            </div>
+
+            <!-- Footer Action -->
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" class="btn btn-terracotta" style="padding: 10px 22px;">
+                Submit Ticket
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tickets History Table -->
+        <div class="card">
+          <div class="section-title">My Support Tickets</div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticket ID</th>
+                  <th>Issue</th>
+                  <th>Submitted</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rSupportBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+<!-- ================= SHARED: ACCOUNT ================= -->
+    <section class="view" id="account">
+      <div class="card">
+        <div class="account-grid">
+          <div class="account-side">
+            <div class="account-avatar" id="accAvatar">JD</div>
+            <div style="font-weight:800;font-size:15px;" id="accDisplayName">Juan Dela Cruz</div>
+            <div style="font-size:12px;color:var(--muted);" id="accEmpId">Employee ID: 20261395</div>
+            <div class="role-badges">
+              <span>Requester</span><span>Handler</span><span>Messenger</span><span>Receiver</span>
+            </div>
+            <button class="btn btn-outline btn-sm" style="margin-top:16px;" onclick="logoutToGateway()">Log Out</button>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div class="section-title" style="margin:0;">Credentials</div>
+              <button class="btn btn-outline btn-sm" id="editCredsBtn" onclick="toggleEditCredentials()">Change Credentials</button>
+            </div>
+
+            <div class="field-row">
+              <div class="field-group">
+                <label>Username</label>
+                <input type="text" id="accUsername" class="form-control acc-input" value="Juan_DC" readonly style="width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--cream); font:inherit; color:var(--ink);">
+              </div>
+              <div class="field-group">
+                <label>Display Name</label>
+                <input type="text" id="accNameInput" class="form-control acc-input" value="Juan Dela Cruz" readonly style="width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--cream); font:inherit; color:var(--ink);">
+              </div>
+            </div>
+
+            <div class="field-group" style="margin-top:10px;">
+              <label>Password</label>
+              <div style="position: relative; display: flex; align-items: center;">
+                <input type="password" id="accPassword" class="form-control acc-input" value="veritrail123" readonly style="width:100%; padding:9px 36px 9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--cream); font:inherit; color:var(--ink);">
+                <span onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; cursor: pointer; color: var(--muted); display: flex; align-items: center;" title="Show/Hide password">
+                  <svg id="eyeIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </span>
+              </div>
+            </div>
+
+            <div class="section-title" style="margin-top:24px;">Contact Info</div>
+            <div class="field-row">
+              <div class="field-group">
+                <label>Company Number</label>
+                <input type="text" id="accPhone" class="form-control acc-input" readonly style="width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--cream); font:inherit; color:var(--ink);">
+              </div>
+              <div class="field-group">
+                <label>Company Address</label>
+                <input type="text" id="accAddress" class="form-control acc-input" readonly style="width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--cream); font:inherit; color:var(--ink);">
+              </div>
+            </div>
+            <div class="field-group" style="margin-top:10px;">
+              <label>Email Address</label>
+              <input type="text" id="accEmail" class="form-control acc-input" readonly style="width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:var(--cream); font:inherit; color:var(--ink);">
+            </div>
+            <button class="btn btn-terracotta" id="saveCredsBtn" style="display:none; margin-top: 16px;" onclick="saveCredentialsChanges()">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============ ADMIN VERIFICATION MODAL ============ -->
+<div class="modal-overlay" id="adminAuthOverlay" onclick="if(event.target===this) cancelAdminAccess()">
+  <div class="modal-card">
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    </div>
+    <div class="modal-title">Admin Verification Required</div>
+    <div class="modal-subtitle" id="adminAuthSubtitle">Enter your Admin ID to preview this workspace.</div>
+    <input type="text" id="adminAuthInput" class="modal-input" placeholder="Enter Admin ID" autocomplete="off" onkeydown="if(event.key==='Enter') confirmAdminAccess(); if(event.key==='Escape') cancelAdminAccess();">
+    <div class="modal-error" id="adminAuthError"></div>
+    <div class="modal-hint" id="adminAuthHint"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline btn-sm" onclick="cancelAdminAccess()">Cancel</button>
+      <button class="btn btn-sage btn-sm" onclick="confirmAdminAccess()">Verify &amp; Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Command Palette Overlay -->
+<div class="modal-overlay" id="cmdPaletteOverlay" onclick="if(event.target===this) closeCmdPalette()">
+  <div class="modal-card" style="max-width: 480px; text-align: left;">
+    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+      <span class="fw-bold small text-uppercase" style="letter-spacing: 0.1em; color: var(--muted);">⚡ Quick Command Palette</span>
+      <kbd style="font-size: 10px; background: var(--cream-2); padding: 2px 6px; border-radius: 4px; color: var(--ink);">ESC</kbd>
+    </div>
+    <input type="text" id="cmdPaletteInput" class="form-control mb-3" placeholder="Type a view name (e.g. Outbound, Inventory, Audit)..." oninput="filterCmdResults(this.value)">
+    <div id="cmdResultsList" style="max-height: 240px; overflow-y: auto;" class="d-flex flex-column gap-1"></div>
+  </div>
+</div>
+
+<!-- Edit Inventory Modal -->
+<div class="modal-overlay" id="editInventoryOverlay" onclick="if(event.target===this) closeEditInventoryModal()">
+  <div class="modal-card" style="max-width: 500px; text-align: left;">
+    <div class="section-title" id="editModalTitle" style="margin-top:0;">Edit Inventory Item</div>
+    <div class="section-hint" style="margin-bottom: 16px;">Update stock levels, category, or supplier details.</div>
+    
+    <input type="hidden" id="editItemId">
+    
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div>
+        <label class="form-label">Item Name</label>
+        <input type="text" id="editItemName" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <label class="form-label">Category</label>
+          <select id="editItemCat" class="form-control" onchange="handleCategoryChange()" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+            <option value="">Select Category...</option>
+            <option>Electronics</option>
+            <option>Home &amp; Living</option>
+            <option>Apparel</option>
+            <option>Sports</option>
+            <option>Stationery</option>
+            <option>Documents &amp; Records</option>
+            <option>Tools &amp; Tool Kits</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">SKU</label>
+          <input type="text" id="editItemSku" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <label class="form-label">Stock Level (Units)</label>
+          <input type="number" id="editItemLevel" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+        </div>
+        <div>
+          <label class="form-label">Low Stock Threshold</label>
+          <input type="number" id="editItemThreshold" class="form-control" value="5" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);">
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">Supplier</label>
+        <select id="editItemSupplier" class="form-control" onchange="handleSupplierChange()" style="width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--cream); font-family: inherit; font-size: 13px; color: var(--ink);"></select>
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
+      <button class="btn btn-outline btn-sm" onclick="closeEditInventoryModal()">Cancel</button>
+      <button class="btn btn-sage btn-sm" onclick="saveInventoryEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Request Detail Modal Overlay -->
+<div class="modal-overlay" id="requestDetailOverlay" onclick="if(event.target===this) closeRequestDetailModal()">
+  <div class="modal-card" style="max-width: 520px; text-align: left; padding: 24px;">
+    <!-- Header -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--line);">
+      <div>
+        <div style="font-weight: 800; font-size: 18px; color: var(--ink);" id="reqModalId">TRX-102</div>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 2px;" id="reqModalDate">Submitted on July 23, 2026</div>
+      </div>
+      <span id="reqModalStatusPill" class="pill submitted">Submitted</span>
+    </div>
+
+    <!-- Metadata Grid -->
+    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px; margin-bottom: 18px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label class="form-label">Recipient Name</label>
+          <div style="font-weight: 700; color: var(--ink);" id="reqModalReceiver">Axel San Juan</div>
+        </div>
+        <div>
+          <label class="form-label">Packaging Preference</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="reqModalPackaging">Bubble Wrap with Box</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label class="form-label">Delivery Location</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="reqModalAddress">5th Floor, Makati HQ Office</div>
+        </div>
+        <div>
+          <label class="form-label">Quantity Summary</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="reqModalQuantity">1 items · 3 units</div>
+        </div>
+      </div>
+
+      <div id="reqModalCancelReasonBox" style="display: none; padding: 10px 12px; background: #F6E4DD; border: 1px solid var(--danger); border-radius: 9px; margin-top: 4px;">
+        <label class="form-label" style="color: var(--danger); margin-bottom: 2px;">Cancellation Reason</label>
+        <div style="font-size: 12.5px; color: #8A3A26; font-weight: 600;" id="reqModalCancelReasonText">—</div>
+      </div>
+    </div>
+
+    <!-- Trail / History Timeline Section -->
+    <div style="border-top: 1px dashed var(--line); padding-top: 14px; margin-top: 10px;">
+      <div class="section-title" style="font-size: 13px; margin-bottom: 10px;">Activity Log Trail</div>
+      <ul class="trail" id="reqModalTrail" style="max-height: 180px; overflow-y: auto; padding-right: 6px;"></ul>
+    </div>
+
+    <!-- Footer Actions -->
+    <div style="margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; justify-content: flex-end; gap: 10px;" id="reqModalActions">
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeRequestDetailModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Reason Modal Overlay -->
+<div class="modal-overlay" id="cancelReasonOverlay" onclick="if(event.target===this) closeCancelReasonModal()">
+  <div class="modal-card" style="max-width: 440px; text-align: left; padding: 24px;">
+    <div class="modal-title" style="text-align: left; margin-bottom: 4px;" id="cancelModalTitle">Cancel Request TRX-101</div>
+    <div class="modal-subtitle" style="text-align: left; margin-bottom: 16px;">Please state the reason for cancelling this transfer request.</div>
+
+    <input type="hidden" id="cancelTargetReqId">
+
+    <div style="margin-bottom: 16px;">
+      <label class="form-label">Reason for Cancellation (Required)</label>
+      <textarea id="cancelReasonInput" class="vt-input" placeholder="e.g. Duplicate request submitted / Item no longer needed..." style="min-height: 90px; resize: vertical; padding: 10px; font-size: 13px;"></textarea>
+    </div>
+
+    <div class="modal-actions" style="justify-content: flex-end; gap: 8px;">
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeCancelReasonModal()">Keep Request</button>
+      <button type="button" class="btn btn-terracotta btn-sm" style="background: var(--danger); border-color: var(--danger);" onclick="confirmRequestCancellation()">Confirm Cancellation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Requester Dispute Detail Modal Overlay -->
+<div class="modal-overlay" id="reqDisputeDetailOverlay" onclick="if(event.target===this) closeReqDisputeModal()">
+  <div class="modal-card" style="max-width: 520px; text-align: left; padding: 24px;">
+    <!-- Header -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--line);">
+      <div>
+        <div style="font-weight: 800; font-size: 18px; color: var(--ink);" id="dspModalId">DSP-0025 — TRX-081</div>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 2px;" id="dspModalDate">Raised on July 22, 2026</div>
+      </div>
+      <span id="dspModalStatusPill" class="pill submitted">Open</span>
+    </div>
+
+    <!-- Metadata Grid -->
+    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px; margin-bottom: 18px;">
+      <div>
+        <label class="form-label">Raised By (Receiver)</label>
+        <div style="font-weight: 700; color: var(--ink);" id="dspModalRaisedBy">Liam Navarro (Receiver)</div>
+      </div>
+
+      <div>
+        <label class="form-label">Issue Description</label>
+        <div style="padding: 12px; background: var(--cream); border: 1px solid var(--line); border-radius: 10px; color: var(--ink-soft); font-size: 13px; line-height: 1.5;" id="dspModalDesc">
+          Outer box arrived crushed on one corner during transit...
+        </div>
+      </div>
+
+      <!-- Station Feedback -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="padding: 10px; background: var(--cream-2); border-radius: 8px;">
+          <label class="form-label" style="margin-bottom: 2px;">Handler Remarks</label>
+          <div style="font-size: 11.5px; color: var(--ink-soft);" id="dspModalHandler">Packed per rules.</div>
+        </div>
+        <div style="padding: 10px; background: var(--cream-2); border-radius: 8px;">
+          <label class="form-label" style="margin-bottom: 2px;">Messenger Remarks</label>
+          <div style="font-size: 11.5px; color: var(--ink-soft);" id="dspModalMessenger">Delivered as received.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Action -->
+    <div style="margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; justify-content: flex-end;">
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeReqDisputeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Support Ticket Detail Modal Overlay -->
+<div class="modal-overlay" id="supportTicketOverlay" onclick="if(event.target===this) closeSupportTicketModal()">
+  <div class="modal-card" style="max-width: 480px; text-align: left; padding: 24px;">
+    <!-- Header -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--line);">
+      <div>
+        <div style="font-weight: 800; font-size: 18px; color: var(--ink);" id="stModalId">AST-0001</div>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 2px;" id="stModalDate">Submitted on July 18, 2026</div>
+      </div>
+      <span id="stModalStatusPill" class="pill submitted">Open</span>
+    </div>
+
+    <!-- Metadata Grid -->
+    <div style="display: flex; flex-direction: column; gap: 14px; font-size: 13px; margin-bottom: 18px;">
+      <div>
+        <label class="form-label">Issue Category</label>
+        <strong style="color: var(--ink); font-size: 14px;" id="stModalIssue">Forgot Password</strong>
+      </div>
+
+      <div>
+        <label class="form-label">Issue Description</label>
+        <div style="padding: 12px; background: var(--cream); border: 1px solid var(--line); border-radius: 10px; color: var(--ink-soft); font-size: 13px; line-height: 1.5; min-height: 80px;" id="stModalDesc">
+          I forgot my administrator password and cannot access the system.
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label class="form-label">Submitted By</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="stModalUser">Juan Dela Cruz</div>
+        </div>
+        <div>
+          <label class="form-label">Priority Level</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="stModalPriority">High</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Action -->
+    <div style="margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; justify-content: flex-end;">
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeSupportTicketModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Handler Task Detail Modal Island -->
+<div class="modal-overlay" id="handlerTaskModalOverlay" onclick="if(event.target===this) closeHandlerTaskModal()">
+  <div class="modal-card" style="max-width: 650px; width: 90%; text-align: left; max-height: 90vh; overflow-y: auto;">
+    
+    <!-- Modal Header -->
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 12px; margin-bottom: 16px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <strong id="htmId" style="font-size: 20px; font-weight: 800; color: var(--ink);">TRX-000</strong>
+          <span id="htmStatusPill" class="pill approved" style="font-size: 11px;">Active</span>
+        </div>
+        <div id="htmRequester" style="font-size: 13px; color: var(--ink-soft); margin-top: 4px;">Requester Details</div>
+      </div>
+      <div id="htmBadges" style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end;"></div>
+    </div>
+
+    <!-- Modal Body (Pick List, Stepper, & Actions) -->
+    <div id="htmBody" style="display: flex; flex-direction: column; gap: 16px;"></div>
+
+    <!-- Modal Footer Actions -->
+    <div style="margin-top: 20px; border-top: 1px dashed var(--line); padding-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
+      <button class="btn btn-outline btn-sm" onclick="closeHandlerTaskModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Messenger History Detail Modal Overlay -->
+<div class="modal-overlay" id="messengerHistoryDetailOverlay" onclick="if(event.target===this) closeMessengerHistoryModal()">
+  <div class="modal-card" style="max-width: 520px; text-align: left; padding: 24px;">
+    <!-- Header -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--line);">
+      <div>
+        <div style="font-weight: 800; font-size: 18px; color: var(--ink);" id="mHistModalId">TRX-000</div>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 2px;" id="mHistModalDate">Date</div>
+      </div>
+      <span id="mHistModalStatusPill" class="pill complete">Status</span>
+    </div>
+
+    <!-- Metadata Grid -->
+    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px; margin-bottom: 18px;">
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label class="form-label">Requester (Sender)</label>
+          <div style="font-weight: 700; color: var(--ink);" id="mHistModalRequester">—</div>
+        </div>
+        <div>
+          <label class="form-label">Receiver (Recipient)</label>
+          <div style="font-weight: 700; color: var(--ink);" id="mHistModalReceiver">—</div>
+        </div>
+      </div>
+
+      <!-- Route / Addresses -->
+      <div style="background: var(--cream-2); padding: 12px; border-radius: 10px; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px;">
+        <div>
+          <label class="form-label" style="margin-bottom: 2px; color: var(--sage-dark);">📍 Pickup Address (From)</label>
+          <div style="font-weight: 600; color: var(--ink);" id="mHistModalFromAddress">Central Warehouse Hub</div>
+        </div>
+        <div style="border-top: 1px dashed var(--line); padding-top: 6px;">
+          <label class="form-label" style="margin-bottom: 2px; color: var(--terracotta);">🏁 Delivery Address (To)</label>
+          <div style="font-weight: 600; color: var(--ink);" id="mHistModalToAddress">—</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label class="form-label">Item Category</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="mHistModalCategory">—</div>
+        </div>
+        <div>
+          <label class="form-label">Quantity</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="mHistModalQuantity">—</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">Packaging Type</label>
+        <div style="font-weight: 600; color: var(--ink-soft);" id="mHistModalPackaging">—</div>
+      </div>
+
+    </div>
+
+    <!-- Footer Action -->
+    <div style="margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; justify-content: flex-end;">
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeMessengerHistoryModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receiver Incoming Delivery Detail Modal Overlay -->
+<div class="modal-overlay" id="receiverInboundDetailOverlay" onclick="if(event.target===this) closeReceiverInboundModal()">
+  <div class="modal-card" style="max-width: 520px; text-align: left; padding: 24px;">
+    <!-- Header -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed var(--line);">
+      <div>
+        <div style="font-weight: 800; font-size: 18px; color: var(--ink);" id="rInboundModalId">TRX-000</div>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 2px;" id="rInboundModalDate">Date</div>
+      </div>
+      <span id="rInboundModalStatusPill" class="pill submitted">Status</span>
+    </div>
+
+    <!-- Metadata Grid -->
+    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px; margin-bottom: 18px;">
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label class="form-label">Requester (Sender)</label>
+          <div style="font-weight: 700; color: var(--ink);" id="rInboundModalRequester">—</div>
+        </div>
+        <div>
+          <label class="form-label">Recipient (Receiver)</label>
+          <div style="font-weight: 700; color: var(--ink);" id="rInboundModalReceiver">—</div>
+        </div>
+      </div>
+
+      <!-- Route / Addresses -->
+      <div style="background: var(--cream-2); padding: 12px; border-radius: 10px; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px;">
+        <div>
+          <label class="form-label" style="margin-bottom: 2px; color: var(--sage-dark);">📍 Dispatch Location (From)</label>
+          <div style="font-weight: 600; color: var(--ink);" id="rInboundModalFromAddress">Central Warehouse Hub</div>
+        </div>
+        <div style="border-top: 1px dashed var(--line); padding-top: 6px;">
+          <label class="form-label" style="margin-bottom: 2px; color: var(--terracotta);">🏁 Receiving Destination (To)</label>
+          <div style="font-weight: 600; color: var(--ink);" id="rInboundModalToAddress">—</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label class="form-label">Category</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="rInboundModalCategory">—</div>
+        </div>
+        <div>
+          <label class="form-label">Quantity Summary</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="rInboundModalQuantity">—</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label class="form-label">Courier Method</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="rInboundModalCourier">—</div>
+        </div>
+        <div>
+          <label class="form-label">Packaging</label>
+          <div style="font-weight: 600; color: var(--ink-soft);" id="rInboundModalPackaging">—</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer Action -->
+    <div style="margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line); display: flex; justify-content: flex-end; gap: 10px;" id="rInboundModalFooterActions">
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeReceiverInboundModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Official Sender Letter / Waiver Document Modal -->
+<div class="modal-overlay" id="letterModalOverlay" onclick="if(event.target===this) closeLetterModal()">
+  <div class="modal-card" style="max-width: 620px; width: 95%; text-align: left; padding: 28px; background: #FFF; border-radius: 12px;">
+    
+    <!-- Printable Document Viewer Body -->
+    <div id="printableDocument" style="background: #FAFAFA; border: 1px solid #E2E8F0; border-radius: 8px; padding: 28px; font-family: 'Times New Roman', Georgia, serif; color: #1A202C;">
+      
+      <!-- Official Header / Letterhead -->
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #2D3748; padding-bottom: 14px; margin-bottom: 20px;">
+        <div>
+          <div style="font-size: 20px; font-weight: 800; letter-spacing: 0.5px; color: #1F4037; font-family: sans-serif;">VERITRAIL LOGISTICS</div>
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: #718096; font-family: sans-serif;">Official Sender Declaration &amp; Package Waiver</div>
+        </div>
+        <div style="text-align: right; font-family: sans-serif; font-size: 11px; color: #718096;">
+          <div>REF NO: <strong id="docRefNo" style="color:#2D3748;">TRX-071</strong></div>
+          <div id="docDate">Date: July 24, 2026</div>
+        </div>
+      </div>
+
+      <!-- Document Title -->
+      <div style="text-align: center; margin-bottom: 22px;">
+        <span style="font-family: sans-serif; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 4px 12px; background: #E2E8F0; border-radius: 4px; color: #2D3748;">
+          Notice of Factory Sealed Package &amp; Inspection Waiver
+        </span>
+      </div>
+
+      <!-- Letter Body Text -->
+      <div style="font-size: 14px; line-height: 1.7; color: #2D3748; margin-bottom: 24px;">
+        <p><strong>TO THE RECEIVING OFFICER / INSPECTOR:</strong></p>
+        
+        <p>Please be advised that the contents under Transfer Reference <strong id="docBodyRef">TRX-071</strong> consist of pre-calibrated, factory-sealed precision instruments or document records.</p>
+
+        <div style="background: #FFF; border-left: 4px solid #C47A57; padding: 12px 16px; margin: 16px 0; font-style: italic; color: #4A5568;" id="docLetterContent">
+          "Official Notice from Sender: Item is in brand-new factory original seal. Do not open outer packaging or break seal for functional testing."
+        </div>
+
+        <p>We formally request that the recipient inspect <strong>outer protective packaging only</strong> and refrain from unsealing or powering on the equipment during the Final Inspection stage. Chain of custody liability for internal factory seals remains with the sender upon receipt of intact outer packaging.</p>
+      </div>
+
+      <!-- Signature & Stamp Section -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; border-top: 1px dashed #CBD5E0; padding-top: 16px; font-family: sans-serif;">
+        <div>
+          <div style="font-size: 11px; color: #718096; text-transform: uppercase;">Authorized Sender Signature</div>
+          <div style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 24px; color: #1F4037; margin-top: 4px;" id="docSignature">Marcus Hale</div>
+          <div style="font-size: 12px; font-weight: 700; color: #2D3748;" id="docSenderName">Marcus Hale</div>
+          <div style="font-size: 11px; color: #718096;">Verified Sender Representative</div>
+        </div>
+
+        <div style="border: 2px dashed #94A684; padding: 8px 14px; border-radius: 8px; text-align: center; color: #3F5A49; background: rgba(148, 166, 132, 0.1);">
+          <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">VeriTrail Digital Chain</div>
+          <div style="font-size: 11px; font-weight: 800;">✓ SEAL VERIFIED</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer Actions -->
+    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+      <button type="button" class="btn btn-outline btn-sm" onclick="printSenderDocument()">
+        Print / Save as PDF
+      </button>
+      <button type="button" class="btn btn-sage btn-sm" onclick="closeLetterModal()">
+        Close Document
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
